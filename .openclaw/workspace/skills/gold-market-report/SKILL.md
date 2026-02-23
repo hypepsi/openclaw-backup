@@ -6,7 +6,7 @@ homepage: https://docs.openclaw.ai/tools/skills
 metadata: { "openclaw": { "emoji": "📦", "skillKey": "gold-market-report" } }
 ---
 
-# Gold Market Report 3.0
+# Gold Market Report 3.1
 
 ## Goal
 输出“可追溯、可连续跟踪、可长期稳定运行”的黄金日报。
@@ -32,6 +32,23 @@ metadata: { "openclaw": { "emoji": "📦", "skillKey": "gold-market-report" } }
 - 拉取时间
 - 行情时间戳（UTC + 本地）
 
+## Macro/Flow Data Reliability Rules (Mandatory)
+GoldAPI 不提供以下字段：10Y、DXY、GLD 持仓。
+这些必须通过 `web_search` 获取，但要降噪：
+
+1) 定向来源优先级：
+- 第一优先：Reuters / Bloomberg / TradingView
+- 第二优先：CNBC / WSJ / Investing / Kitco
+- GLD 持仓可用基金官方或主流金融媒体引用
+
+2) 时间戳约束：
+- 每个宏观/资金结论都要写“发布时间或数据时间”
+- 默认优先 24h 内；若无则允许 `最近可得`（见下）
+
+3) 双来源约束：
+- 关键判断尽量双来源
+- 做不到时标注 `低置信度`
+
 ## Professional Analysis Stack (Mandatory, But Adaptive)
 必须检查四层；若无新增变量可简写“延续上期，无显著增量”。
 
@@ -52,7 +69,6 @@ metadata: { "openclaw": { "emoji": "📦", "skillKey": "gold-market-report" } }
 
 ### 3) 叙事与情绪层
 - 最近24-72小时核心叙事 2-4 条
-- 关键判断尽量双来源
 - 冲突必须写 `分歧与不确定性`
 
 ### 4) 技术与结构层（轻量）
@@ -65,7 +81,7 @@ metadata: { "openclaw": { "emoji": "📦", "skillKey": "gold-market-report" } }
 ### A. 数据降级（最近可得）
 若宏观或ETF在近24小时无更新：
 - 允许使用最近可得交易日数据
-- 明确标注：`最近可得：YYYY-MM-DD`
+- 标注：`最近可得：YYYY-MM-DD`
 - 置信度下调一级
 
 禁止因为单个解释因子缺失而整份报告停摆。
@@ -88,9 +104,21 @@ metadata: { "openclaw": { "emoji": "📦", "skillKey": "gold-market-report" } }
 - 16:00 对比：当日 09:00
 
 基线来源顺序：
-1. `~/.openclaw/workspace/reports/gold/` 最近一期归档
+1. `~/.openclaw/workspace/state/gold-market-report-history.json`（优先）
 2. `~/.openclaw/workspace/state/gold-market-report-last.json`
 3. 若都无：`基线不可用，降级为单次快照`
+
+### History State File (Mandatory)
+为了节省上下文并稳定 3日/7日回看，禁止每次读取大量旧 md。
+优先使用：`~/.openclaw/workspace/state/gold-market-report-history.json`
+
+要求结构（示例）：
+- `history_states`: 最近最多 7 条（数组）
+- 每条最少包含：`reportTime`, `price`, `freshness`, `factorTop3`, `confidence`, `archivePath`
+
+更新规则：
+- 新增本次记录到头部
+- 长度超过7则裁剪
 
 ### 3日 / 7日回看
 每次报告必须包含：
@@ -122,7 +150,7 @@ metadata: { "openclaw": { "emoji": "📦", "skillKey": "gold-market-report" } }
 
 并更新状态：
 - `~/.openclaw/workspace/state/gold-market-report-last.json`
-- 至少包含：时点、价格、涨跌、主导因子Top3、置信度、归档路径
+- `~/.openclaw/workspace/state/gold-market-report-history.json`
 
 ## Date/Freshness Gate (Mandatory)
 先判定：
@@ -133,6 +161,11 @@ metadata: { "openclaw": { "emoji": "📦", "skillKey": "gold-market-report" } }
 若为 `历史快照（非今日）`：
 - 禁止写“今日驱动已确认”
 - 只能写“最近可得快照 + 下一时段观察点”
+
+## Time Determinism
+- 报告时间基准优先使用调度注入时间和工具返回时间戳。
+- 本地时间一律按 `Asia/Shanghai` 展示。
+- 若本地时间与行情时间不一致，以行情时间戳为事实基准，并明确标注。
 
 ## Output Contract (Telegram)
 

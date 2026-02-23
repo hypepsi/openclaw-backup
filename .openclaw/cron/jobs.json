@@ -17,7 +17,7 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Use skill gold-market-report to generate today 09:00 gold report.\nContinuity requirement: compare against previous day 16:00 report and emphasize DELTA only.\nMust include baseline replay and changed vs unchanged parts.\nMandatory: XAU/USD price must be fetched via GoldAPI endpoint only, and report must include price source section naming goldapi.io and endpoint URL.\nOutput in Chinese, Telegram-ready, strict format per skill.\nHard gate: if timestamp date is non-today (历史快照), do status + snapshot interpretation only, and do not output today delta conclusion wording."
+        "message": "Use skill gold-market-report to generate today 09:00 gold report. Must call market_get_xauusd_snapshot first and treat GoldAPI values as the only numeric truth source. Enforce factor-driven analysis (macro + flow + narrative + structure), include 3-day/7-day continuity review, and write archive markdown to ~/.openclaw/workspace/reports/gold/. If narrative is mostly unchanged, report only incremental changes and confidence/invalidations. Hard gate: if timestamp is non-today, switch to snapshot-only mode and do not claim confirmed today drivers. Output Chinese, Telegram-ready, strict format per skill."
       },
       "delivery": {
         "mode": "announce",
@@ -39,7 +39,7 @@
       "name": "每日16点黄金中长线内参",
       "enabled": true,
       "createdAtMs": 1771518558485,
-      "updatedAtMs": 1771747429369,
+      "updatedAtMs": 1771833689180,
       "schedule": {
         "kind": "cron",
         "expr": "0 16 * * *",
@@ -49,7 +49,7 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Use skill gold-market-report to generate today 16:00 gold report.\nContinuity requirement: compare against same-day 09:00 report and emphasize DELTA only.\nMust include baseline replay and changed vs unchanged parts.\nMandatory: XAU/USD price must be fetched via GoldAPI endpoint only, and report must include price source section naming goldapi.io and endpoint URL.\nOutput in Chinese, Telegram-ready, strict format per skill.\nHard gate: if timestamp date is non-today (历史快照), do status + snapshot interpretation only, and do not output today delta conclusion wording."
+        "message": "Use skill gold-market-report to generate today 16:00 gold report. Must call market_get_xauusd_snapshot first and treat GoldAPI values as the only numeric truth source. Enforce factor-driven analysis (macro + flow + narrative + structure), include 3-day/7-day continuity review, and write archive markdown to ~/.openclaw/workspace/reports/gold/. If narrative is mostly unchanged, report only incremental changes and confidence/invalidations. Hard gate: if timestamp is non-today, switch to snapshot-only mode and do not claim confirmed today drivers. Output Chinese, Telegram-ready, strict format per skill."
       },
       "delivery": {
         "mode": "announce",
@@ -58,12 +58,11 @@
         "bestEffort": true
       },
       "state": {
-        "nextRunAtMs": 1771833600000,
-        "lastRunAtMs": 1771747200008,
-        "lastStatus": "error",
-        "lastDurationMs": 229361,
-        "consecutiveErrors": 3,
-        "lastError": "cron announce delivery failed"
+        "nextRunAtMs": 1771920000000,
+        "lastRunAtMs": 1771833600008,
+        "lastStatus": "ok",
+        "lastDurationMs": 89172,
+        "consecutiveErrors": 0
       }
     },
     {
@@ -257,6 +256,31 @@
         "lastStatus": "ok",
         "lastDurationMs": 45770,
         "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "housekeeping_weekly_1771836288000",
+      "agentId": "main",
+      "name": "每周日0330 OpenClaw清理",
+      "enabled": true,
+      "createdAtMs": 1771836288000,
+      "updatedAtMs": 1771836288000,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 3 * * 0",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Use skill openclaw-housekeeping. Run apply mode once weekly and report concise cleanup summary. If script fails, output error and stop."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "7223802318",
+        "bestEffort": true
       }
     }
   ]
