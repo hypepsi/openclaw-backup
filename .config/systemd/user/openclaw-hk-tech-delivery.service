@@ -1,0 +1,7 @@
+[Unit]
+Description=OpenClaw HK-Tech markdown delivery to Telegram
+After=network.target openclaw-gateway.service
+
+[Service]
+Type=oneshot
+ExecStart=/home/hypepsi/.openclaw/workspace/scripts/delivery/send_hk_latest.sh

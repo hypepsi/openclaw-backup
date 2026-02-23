@@ -7,7 +7,7 @@
       "name": "每日9点黄金中长线内参",
       "enabled": true,
       "createdAtMs": 1771518539225,
-      "updatedAtMs": 1771808606683,
+      "updatedAtMs": 1771851130654,
       "schedule": {
         "kind": "cron",
         "expr": "0 9 * * *",
@@ -20,7 +20,7 @@
         "message": "Use skill gold-market-report to generate today 09:00 gold report. Must call market_get_xauusd_snapshot first and treat GoldAPI values as the only numeric truth source. Enforce factor-driven analysis (macro + flow + narrative + structure), include 3-day/7-day continuity review, and write archive markdown to ~/.openclaw/workspace/reports/gold/. If narrative is mostly unchanged, report only incremental changes and confidence/invalidations. Hard gate: if timestamp is non-today, switch to snapshot-only mode and do not claim confirmed today drivers. Output Chinese, Telegram-ready, strict format per skill."
       },
       "delivery": {
-        "mode": "announce",
+        "mode": "none",
         "channel": "telegram",
         "to": "7223802318",
         "bestEffort": true
@@ -39,7 +39,7 @@
       "name": "每日16点黄金中长线内参",
       "enabled": true,
       "createdAtMs": 1771518558485,
-      "updatedAtMs": 1771833689180,
+      "updatedAtMs": 1771851370167,
       "schedule": {
         "kind": "cron",
         "expr": "0 16 * * *",
@@ -52,48 +52,16 @@
         "message": "Use skill gold-market-report to generate today 16:00 gold report. Must call market_get_xauusd_snapshot first and treat GoldAPI values as the only numeric truth source. Enforce factor-driven analysis (macro + flow + narrative + structure), include 3-day/7-day continuity review, and write archive markdown to ~/.openclaw/workspace/reports/gold/. If narrative is mostly unchanged, report only incremental changes and confidence/invalidations. Hard gate: if timestamp is non-today, switch to snapshot-only mode and do not claim confirmed today drivers. Output Chinese, Telegram-ready, strict format per skill."
       },
       "delivery": {
-        "mode": "announce",
+        "mode": "none",
         "channel": "telegram",
         "to": "7223802318",
         "bestEffort": true
       },
       "state": {
         "nextRunAtMs": 1771920000000,
-        "lastRunAtMs": 1771833600008,
+        "lastRunAtMs": 1771851246496,
         "lastStatus": "ok",
-        "lastDurationMs": 89172,
-        "consecutiveErrors": 0
-      }
-    },
-    {
-      "id": "d6d7b585-b4f1-443b-a621-499a83e3d6af",
-      "agentId": "main",
-      "name": "每日1700港股科技收盘总结",
-      "enabled": true,
-      "createdAtMs": 1771553917669,
-      "updatedAtMs": 1771837266038,
-      "schedule": {
-        "kind": "cron",
-        "expr": "0 17 * * *",
-        "tz": "Asia/Shanghai"
-      },
-      "sessionTarget": "isolated",
-      "wakeMode": "now",
-      "payload": {
-        "kind": "agentTurn",
-        "message": "Use skill hk-tech-close-report to generate today Hong Kong tech close report. Must call market_get_hstech_quote first and use it as the only numeric truth source for HSTECH close data. Enforce factor-driven engine (discount-rate, southbound flow, weight structure, policy narrative, risk sentiment) with factor scoring and a clear dominant-factor conclusion. Require adaptive delta-first output, 3-day/7-sample continuity review, unique markdown archive to ~/.openclaw/workspace/reports/hk-tech/, and state updates for last/history tracking. Hard gate: if freshness is non-today, output snapshot mode only and never claim confirmed same-day close drivers. Output Chinese, Telegram-ready, strict format per skill."
-      },
-      "delivery": {
-        "mode": "announce",
-        "channel": "telegram",
-        "to": "7223802318",
-        "bestEffort": true
-      },
-      "state": {
-        "nextRunAtMs": 1771923600000,
-        "lastRunAtMs": 1771837200007,
-        "lastStatus": "ok",
-        "lastDurationMs": 66031,
+        "lastDurationMs": 123671,
         "consecutiveErrors": 0
       }
     },
@@ -232,7 +200,7 @@
       "name": "每日2305基金组合日报",
       "enabled": true,
       "createdAtMs": 1771824616457,
-      "updatedAtMs": 1771825744647,
+      "updatedAtMs": 1771840837196,
       "schedule": {
         "kind": "cron",
         "expr": "0 18 * * *",
@@ -251,10 +219,10 @@
         "bestEffort": true
       },
       "state": {
-        "nextRunAtMs": 1771840800000,
-        "lastRunAtMs": 1771825698877,
+        "nextRunAtMs": 1771927200000,
+        "lastRunAtMs": 1771840800006,
         "lastStatus": "ok",
-        "lastDurationMs": 45770,
+        "lastDurationMs": 37190,
         "consecutiveErrors": 0
       }
     },
@@ -284,6 +252,38 @@
       },
       "state": {
         "nextRunAtMs": 1772307000000
+      }
+    },
+    {
+      "id": "12507ec4-3ef2-4d5d-abd7-fbd504d98d97",
+      "agentId": "main",
+      "name": "每日1700港股科技收盘总结-v2",
+      "enabled": true,
+      "createdAtMs": 1771843399774,
+      "updatedAtMs": 1771850859231,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 17 * * *",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Use skill hk-tech-close-report. Strictly follow SKILL.md and output only final Telegram content without extra preface."
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "7223802318",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1771923600000,
+        "lastRunAtMs": 1771850767243,
+        "lastStatus": "ok",
+        "lastDurationMs": 91988,
+        "consecutiveErrors": 0
       }
     }
   ]

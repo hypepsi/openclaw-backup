@@ -20,12 +20,21 @@
 ## Runtime State (auto-updated)
 - `state/btc-daily-report-last.json`
 - `state/gold-market-report-last.json`
+- `state/gold-market-report-history.json`
+- `state/gold-last-sent.ts`
 - `state/hk-tech-close-last.json`
+- `state/hk-tech-close-history.json`
+- `state/hk-tech-last-sent.archive`
 
 ## Scripts
+- `scripts/delivery/send_gold_latest.sh`: gold cron relay (`mode=none`) -> Telegram.
+- `scripts/delivery/send_hk_latest.sh`: hk-tech cron relay (`mode=none`) -> Telegram.
 - `scripts/manual/`: manual or experimental scripts.
+- `scripts/housekeeping/`: cleanup scripts.
 
 ## Reports
+- `reports/gold/`: gold report archives and relay delivery snapshots.
+- `reports/hk-tech/`: hk-tech report archives.
 - `reports/manual/`: ad-hoc generated reports.
 - `reports/sessions/`: session-level markdown exports.
 
