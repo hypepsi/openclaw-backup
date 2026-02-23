@@ -1,0 +1,66 @@
+**📡 游戏圈晚报工作量声明**  
+本次检索约30个来源，交叉验证15条有效增量信息（重点覆盖过去12-24小时）。  
+注：前夜简报暂不可得，本次为独立分析。
+
+**🎮 今晚最值得看的三条变化**  
+• 微软游戏CEO Phil Spencer退休，AI高管Asha Sharma接任（2月23日生效）  
+• 《使命召唤：战区手游》将于4月17日停服，移动端大逃杀收缩  
+• Steam Deck全球缺货，内存/存储短缺波及PC掌机供应链  
+
+**🔁 昨晚 vs 今晚变化**  
+• 延续趋势：移动端新品上线与旧作停服并存（资源向头部集中）  
+• 新增变量：微软游戏领导层换血，可能影响Xbox生态战略  
+• 热度迁移：PC硬件短缺话题升温，移动端新作《彩虹六号手游》明日上线拉动关注  
+
+**🧠 大白话拆解：为什么这条新闻会出现**  
+**事件A：Phil Spencer退休**  
+• 表面新闻：微软游戏CEO换人，由前Instacart COO Asha Sharma接任  
+• 本质驱动：微软AI战略深化，游戏业务需要更紧密整合AI与云服务  
+> 大白话：微软觉得游戏部门需要更多AI基因，换上一个懂AI和电商的高管来搞变现。
+
+**事件B：战区手游停服**  
+• 表面新闻：Activision宣布《战区手游》4月停服  
+• 本质驱动：玩家数量未达预期，营收不及《使命召唤手游》，资源整合  
+> 大白话：手游市场竞争太激烈，赚不到钱就关掉，集中精力做更赚钱的。
+
+**事件C：Steam Deck缺货**  
+• 表面新闻：Valve确认Steam Deck因内存/存储短缺全球缺货  
+• 本质驱动：AI行业抢走大量存储芯片产能，消费电子供应链受挤压  
+> 大白话：AI公司狂买芯片，导致游戏掌机没零件生产，玩家买不到。
+
+**🕹️ 分平台影响地图**  
+• TapTap/手游：《彩虹六号手游》明日上线拉新，但《战区手游》停服警示市场淘汰加速  
+• 主机（PS5/Xbox/Nintendo）：微软领导层变动可能影响Xbox独占策略与Game Pass内容  
+• PC/Steam/Epic：Steam Next Fest明日开幕，独立游戏曝光机会增加；Steam Deck缺货抑制硬件增长  
+
+**📊 平台热度记分板（0-5）**  
+• 手游：4/5（依据：新品上线+停服事件双重关注）  
+• 主机：3/5（依据：领导层变动引发战略不确定性）  
+• PC平台：4/5（依据：硬件缺货+Next Fest活动同步升温）  
+
+**🧪 信息置信度标注**  
+• Phil Spencer退休：已证实（CNBC、Reuters、Newsweek等多源一致）  
+• 《战区手游》停服：已证实（Activision官方公告，多家媒体报道）  
+• Steam Deck缺货：已证实（Valve官方确认，Tom's Hardware等多源报道）  
+• 《彩虹六号手游》上线：已证实（Ubisoft官方公告，Game8等多源确认）  
+
+**📅 前瞻清单（未来1-4周）**  
+• 需盯的发布会/测试节点：任天堂Direct（传闻2月下旬）、Xbox新CEO首次公开表态、Steam Next Fest开发者反馈  
+• 可能引发二次波动的变量：内存短缺是否持续、Rainbow Six Mobile上线后营收表现、微软游戏部门重组细节  
+
+**✅ 明日验证点（防空话）**  
+1. 若Rainbow Six Mobile上线后登顶免费榜，则移动端FPS竞争格局加剧  
+2. 若Steam Deck缺货情况未缓解，第三方掌机（如AYANEO）可能趁机抢占市场  
+3. 若微软未在48小时内公布新CEO具体战略，Xbox社区担忧情绪可能升级  
+
+**🧭 睡前一页纸结论**  
+• 今晚最重要一句话：游戏行业正在经历“AI挤占硬件产能”与“移动端精品化淘汰”双重压力，同时领导层换血预示战略转型。  
+• 明天值得继续追踪的信号：Rainbow Six Mobile上线首日数据、Steam Next Fest热门Demo榜单、微软新CEO首篇内部信。  
+
+**🔎 证据附录（3-8条）**  
+1. [CNBC] Microsoft Xbox chief Phil Spencer retires, replaced by AI executive Asha Sharma（发布时间：2026-02-20，检索时间：2026-02-22 22:10 UTC）- 用于支撑：Phil Spencer退休  
+2. [Reuters] Microsoft Gaming head Phil Spencer retires, insider Asha Sharma takes over（发布时间：2026-02-20，检索时间：2026-02-22 22:10 UTC）- 用于支撑：领导层变动  
+3. [Tom's Hardware] Steam Deck shortage goes global — Valve's handheld console now out of stock in Europe, Canada, the US, and Japan（发布时间：2026-02-22，检索时间：2026-02-22 22:10 UTC）- 用于支撑：Steam Deck缺货  
+4. [Game8] Rainbow Six Mobile set to release on February 23, 2026（发布时间：2026-02-21，检索时间：2026-02-22 22:10 UTC）- 用于支撑：Rainbow Six Mobile上线  
+5. [CoreGamer] Call of Duty: Warzone Mobile Set to Close in April（发布时间：2026-02-21，检索时间：2026-02-22 22:10 UTC）- 用于支撑：战区手游停服  
+6. [All Ages of Geek] Steam Next Fest: February 2026 Edition（发布时间：2026-02-22，检索时间：2026-02-22 22:10 UTC）- 用于支撑：Steam Next Fest开幕

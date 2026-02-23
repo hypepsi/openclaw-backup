@@ -1,0 +1,7 @@
+📧 收到新邮件通知
+
+发件人：Netcraft Takedown Service <takedown-response+83124677@netcraft.com>
+标题：Issue 83124677: Brute force attack originating from 209.166.46.86
+时间：2026-02-22 07:17
+
+内容：Netcraft安全团队通知您，您网络内的IP地址209.166.46.86正在对RDP服务进行暴力攻击，请立即调查并采取措施。

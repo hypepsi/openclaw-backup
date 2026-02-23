@@ -1,0 +1,23 @@
+{
+  "id": "market-data",
+  "name": "Market Data",
+  "description": "Structured market data tools for HSTECH, BTC, XAU/USD, and CN fund portfolio daily snapshots.",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "timeoutMs": { "type": "integer", "minimum": 1000, "maximum": 30000 },
+      "snapshotDir": { "type": "string" },
+      "holdingsPath": { "type": "string" },
+      "providers": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "hstechPrimary": { "type": "string", "enum": ["yahoo_chart"] },
+          "btcPrimary": { "type": "string", "enum": ["twelvedata", "yahoo_chart"] },
+          "goldPrimary": { "type": "string", "enum": ["goldapi", "yahoo_chart"] }
+        }
+      }
+    }
+  }
+}

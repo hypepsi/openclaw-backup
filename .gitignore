@@ -1,0 +1,10 @@
+.DS_Store
+Thumbs.db
+
+# runtime noise
+.openclaw/logs/
+.openclaw/media/
+.openclaw/delivery-queue/
+.openclaw/cron/runs/
+.openclaw/agents/
+.openclaw/memory/*.sqlite*

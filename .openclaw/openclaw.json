@@ -1,0 +1,261 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.2.19-2",
+    "lastTouchedAt": "2026-02-22T13:33:42.245Z"
+  },
+  "env": {
+    "vars": {
+      "BRAVE_API_KEY": "<REDACTED>",
+      "GOG_KEYRING_BACKEND": "<REDACTED>",
+      "GOG_KEYRING_PASSWORD": "<REDACTED>",
+      "OPENAI_API_KEY": "<REDACTED>",
+      "GOLDAPI_ACCESS_TOKEN": "<REDACTED>",
+      "TWELVEDATA_API_KEY": "<REDACTED>"
+    }
+  },
+  "wizard": {
+    "lastRunAt": "2026-02-20T05:06:15.488Z",
+    "lastRunVersion": "2026.2.19-2",
+    "lastRunCommand": "onboard",
+    "lastRunMode": "local"
+  },
+  "auth": {
+    "profiles": {
+      "openai-codex:default": {
+        "provider": "openai-codex",
+        "mode": "oauth"
+      }
+    }
+  },
+  "models": {
+    "providers": {
+      "deepseek": {
+        "baseUrl": "https://api.deepseek.com",
+        "apiKey": "<REDACTED>",
+        "auth": "api-key",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "deepseek-chat",
+            "name": "DeepSeek Chat",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 8192
+          },
+          {
+            "id": "deepseek-reasoner",
+            "name": "DeepSeek Reasoner",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 8192
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "deepseek/deepseek-reasoner",
+        "fallbacks": [
+          "deepseek/deepseek-chat",
+          "openai-codex/gpt-5.3-codex"
+        ]
+      },
+      "models": {
+        "openai-codex/gpt-5.3-codex": {},
+        "deepseek/deepseek-reasoner": {},
+        "deepseek/deepseek-chat": {}
+      },
+      "workspace": "/home/hypepsi/.openclaw/workspace",
+      "memorySearch": {
+        "extraPaths": [
+          "/home/hypepsi/.openclaw/workspace/docs/user-doc-base/cisco/ciscoN9K/knowledge"
+        ],
+        "provider": "openai",
+        "fallback": "none",
+        "model": "text-embedding-3-small"
+      },
+      "compaction": {
+        "mode": "safeguard",
+        "reserveTokensFloor": 4000
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    },
+    "list": [
+      {
+        "id": "main",
+        "default": true,
+        "name": "Main",
+        "workspace": "/home/hypepsi/.openclaw/workspace"
+      },
+      {
+        "id": "hooks",
+        "name": "Hooks",
+        "workspace": "/home/hypepsi/.openclaw/workspace",
+        "model": "deepseek/deepseek-chat",
+        "tools": {
+          "profile": "minimal"
+        }
+      }
+    ]
+  },
+  "tools": {
+    "web": {
+      "search": {
+        "enabled": true,
+        "provider": "perplexity",
+        "apiKey": "<REDACTED>",
+        "perplexity": {
+          "apiKey": "<REDACTED>",
+          "baseUrl": "https://api.perplexity.ai",
+          "model": "sonar-pro"
+        }
+      }
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true
+  },
+  "hooks": {
+    "enabled": true,
+    "path": "/hooks",
+    "token": "1e32b0e7a0f023fc937c0b700c1f696e4039b3d7c1db260f",
+    "allowedAgentIds": [
+      "hooks",
+      "main"
+    ],
+    "presets": [
+      "gmail"
+    ],
+    "mappings": [
+      {
+        "match": {
+          "path": "gmail"
+        },
+        "action": "agent",
+        "wakeMode": "now",
+        "name": "Gmail通知",
+        "agentId": "main",
+        "sessionKey": "hook:gmail:{{payload.historyId}}:{{messages[0].id}}",
+        "messageTemplate": "你收到一封新邮件。\n\nFrom: {{messages[0].from}}\nSubject: {{messages[0].subject}}\nDate: {{messages[0].date}}\nSnippet: {{messages[0].snippet}}\nBody: {{messages[0].body}}\n\n输出规则：\n1) 若 From/Subject/Snippet/Body 全为空（或仅空白），仅输出：NO_REPLY\n2) 否则仅输出以下通知格式（不要额外解释）：\n\n📧 收到新邮件通知\n\n发件人：<from>\n标题：<subject>\n时间：<date>\n\n内容：<一句话概览>\n\n可选：若明显是测试邮件，可补一句“这看起来像测试邮件”。\n\n禁止：输出推理过程、系统说明、排查建议、多余前后文。",
+        "deliver": true,
+        "channel": "telegram",
+        "to": "7223802318",
+        "model": "deepseek/deepseek-chat"
+      }
+    ],
+    "gmail": {
+      "account": "hypepsi@gmail.com",
+      "label": "INBOX",
+      "topic": "projects/home-pi-openclaw-gmail/topics/gog-gmail-watch",
+      "subscription": "gog-gmail-watch-push",
+      "pushToken": "5c119b6d0403d960913c73f6f0794d8ae3e864580b3e93cc",
+      "hookUrl": "http://127.0.0.1:18789/hooks/gmail",
+      "includeBody": true,
+      "maxBytes": 20000,
+      "renewEveryMinutes": 720,
+      "serve": {
+        "bind": "127.0.0.1",
+        "port": 8788,
+        "path": "/"
+      },
+      "tailscale": {
+        "mode": "funnel",
+        "path": "/gmail-pubsub"
+      }
+    }
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "dmPolicy": "pairing",
+      "botToken": "<REDACTED>",
+      "allowFrom": [
+        "7223802318"
+      ],
+      "groupPolicy": "allowlist",
+      "streamMode": "off",
+      "retry": {
+        "attempts": 1
+      }
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "auth": {
+      "mode": "token",
+      "token": "<REDACTED>"
+    },
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    },
+    "remote": {
+      "token": "<REDACTED>"
+    },
+    "nodes": {
+      "denyCommands": [
+        "camera.snap",
+        "camera.clip",
+        "screen.record",
+        "calendar.add",
+        "contacts.add",
+        "reminders.add"
+      ]
+    }
+  },
+  "skills": {
+    "install": {
+      "nodeManager": "npm"
+    }
+  },
+  "plugins": {
+    "entries": {
+      "telegram": {
+        "enabled": true
+      },
+      "market-data": {
+        "enabled": true,
+        "config": {
+          "timeoutMs": 12000,
+          "snapshotDir": "/home/hypepsi/.openclaw/workspace/state",
+          "providers": {
+            "hstechPrimary": "yahoo_chart",
+            "btcPrimary": "twelvedata",
+            "goldPrimary": "goldapi"
+          },
+          "holdingsPath": "/home/hypepsi/.openclaw/workspace/data/portfolio/fund-portfolio-holdings.json"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,263 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "id": "daeffe2f-a87a-44ae-a5f1-29f18e695bc3",
+      "agentId": "main",
+      "name": "每日9点黄金中长线内参",
+      "enabled": true,
+      "createdAtMs": 1771518539225,
+      "updatedAtMs": 1771808606683,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 9 * * *",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Use skill gold-market-report to generate today 09:00 gold report.\nContinuity requirement: compare against previous day 16:00 report and emphasize DELTA only.\nMust include baseline replay and changed vs unchanged parts.\nMandatory: XAU/USD price must be fetched via GoldAPI endpoint only, and report must include price source section naming goldapi.io and endpoint URL.\nOutput in Chinese, Telegram-ready, strict format per skill.\nHard gate: if timestamp date is non-today (历史快照), do status + snapshot interpretation only, and do not output today delta conclusion wording."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "7223802318",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1771894800000,
+        "lastRunAtMs": 1771808400006,
+        "lastStatus": "ok",
+        "lastDurationMs": 206677,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "54bd6d0f-a1e0-44c0-9079-f9053fa8f29f",
+      "agentId": "main",
+      "name": "每日16点黄金中长线内参",
+      "enabled": true,
+      "createdAtMs": 1771518558485,
+      "updatedAtMs": 1771747429369,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 16 * * *",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Use skill gold-market-report to generate today 16:00 gold report.\nContinuity requirement: compare against same-day 09:00 report and emphasize DELTA only.\nMust include baseline replay and changed vs unchanged parts.\nMandatory: XAU/USD price must be fetched via GoldAPI endpoint only, and report must include price source section naming goldapi.io and endpoint URL.\nOutput in Chinese, Telegram-ready, strict format per skill.\nHard gate: if timestamp date is non-today (历史快照), do status + snapshot interpretation only, and do not output today delta conclusion wording."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "7223802318",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1771833600000,
+        "lastRunAtMs": 1771747200008,
+        "lastStatus": "error",
+        "lastDurationMs": 229361,
+        "consecutiveErrors": 3,
+        "lastError": "cron announce delivery failed"
+      }
+    },
+    {
+      "id": "d6d7b585-b4f1-443b-a621-499a83e3d6af",
+      "agentId": "main",
+      "name": "每日1700港股科技收盘总结",
+      "enabled": true,
+      "createdAtMs": 1771553917669,
+      "updatedAtMs": 1771817850355,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 17 * * *",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Use skill hk-tech-close-report to generate today Hong Kong tech close report. Strictly follow skill validation for market-state (open/closed/holiday) and stale-data checks before any close conclusion. Must include Yahoo HSTECH.HK source section in output.\nHard gate: if data freshness is judged as 历史快照（非今日）, do not produce today close conclusion or today driver attribution; output status-only downgrade per skill."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "7223802318",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1771837200000,
+        "lastRunAtMs": 1771817810145,
+        "lastStatus": "ok",
+        "lastDurationMs": 40210,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "ai_news_1771592784029",
+      "agentId": "main",
+      "name": "每日2230AI圈新闻汇总",
+      "enabled": true,
+      "createdAtMs": 1771592784029,
+      "updatedAtMs": 1771770772028,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 22 * * *",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Use skill `ai-news-daily` to generate today's AI ecosystem daily brief.\nFocus on past 12-24h deltas only; prioritize models, open-vs-closed competition, hardware, and builder tools.\nOutput in Chinese, Telegram-ready, with plain-language explanations and trend takeaway.\n\nResearch execution rule (strict):\n- All web research must be executed via OpenClaw agent tools (not direct lightweight web lookup).\n- OpenClaw web_search is the primary retrieval backend (provider: Perplexity Sonar).\n- Perform deep search + cross-source verification before writing conclusions.\n- If web_search is unavailable, do not guess; explicitly report data-collection failure and stop."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "7223802318",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1771857000000,
+        "lastRunAtMs": 1771770600007,
+        "lastStatus": "ok",
+        "lastDurationMs": 172021,
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "geo_night_2200_1771790001001",
+      "agentId": "main",
+      "name": "每晚2150地缘政治晚报",
+      "enabled": true,
+      "createdAtMs": 1771685021234,
+      "updatedAtMs": 1771768366822,
+      "schedule": {
+        "kind": "cron",
+        "expr": "50 21 * * *",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Use skill `geopolitics-night-brief` to generate tonight's geopolitical bedtime brief.\nHard requirements: explain root causes and historical context in plain Chinese, and include last-night vs tonight delta.\nOutput Telegram-ready strict format with clear fact-vs-inference labels and tomorrow watchpoints.\n\nResearch execution rule (strict):\n- All web research must be executed via OpenClaw agent tools (not direct lightweight web lookup).\n- OpenClaw web_search is the primary retrieval backend (provider: Perplexity Sonar).\n- Perform deep search + cross-source verification before writing conclusions.\n- If web_search is unavailable, do not guess; explicitly report data-collection failure and stop."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "7223802318",
+        "bestEffort": true
+      },
+      "state": {
+        "consecutiveErrors": 1,
+        "nextRunAtMs": 1771854600000,
+        "lastRunAtMs": 1771768200007,
+        "lastStatus": "error",
+        "lastDurationMs": 166815,
+        "lastError": "cron announce delivery failed"
+      }
+    },
+    {
+      "id": "game_night_2210_1771790001002",
+      "agentId": "main",
+      "name": "每晚2210游戏圈晚报",
+      "enabled": true,
+      "createdAtMs": 1771685021234,
+      "updatedAtMs": 1771769600060,
+      "schedule": {
+        "kind": "cron",
+        "expr": "10 22 * * *",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Use skill `gaming-night-brief` to generate tonight's gaming industry bedtime brief.\nMust cover multi-platform signals (mobile/TapTap, console, PC/platform) and highlight only real 12-24h deltas.\nOutput Telegram-ready strict format with plain-language explanations, forward watchlist, and explicit uncertainty tags for unconfirmed items.\n\nResearch execution rule (strict):\n- All web research must be executed via OpenClaw agent tools (not direct lightweight web lookup).\n- OpenClaw web_search is the primary retrieval backend (provider: Perplexity Sonar).\n- Perform deep search + cross-source verification before writing conclusions.\n- If web_search is unavailable, do not guess; explicitly report data-collection failure and stop."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "7223802318",
+        "bestEffort": true
+      },
+      "state": {
+        "consecutiveErrors": 0,
+        "lastRunAtMs": 1771769400006,
+        "lastStatus": "ok",
+        "lastDurationMs": 200054,
+        "nextRunAtMs": 1771855800000
+      }
+    },
+    {
+      "id": "btc_daily_2320_1771769000000",
+      "agentId": "main",
+      "name": "每日2320 BTC日报",
+      "enabled": true,
+      "createdAtMs": 1771769000000,
+      "updatedAtMs": 1771773824890,
+      "schedule": {
+        "kind": "cron",
+        "expr": "20 23 * * *",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Use skill btc-daily-report to generate today BTC daily report. Mandatory: BTC/USD numeric data and technical metrics must come from Twelve Data API (not web pages), and output must include data-source section with Twelve Data endpoints and fetch timestamp. Must include teaching layer: pick 1-2 terms from today report and explain each with one-line definition, plain-language translation, today usage, and common misunderstanding. Add up to 2 learning actions (beginner + advanced). News/catalyst layer should use OpenClaw web_search with deep cross-source verification. Output in Chinese, Telegram-ready, strict format per skill.\nHard gate: if freshness is 历史快照（非今日）, switch to snapshot-only interpretation and do not claim confirmed today market drivers."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "7223802318",
+        "bestEffort": true
+      },
+      "state": {
+        "consecutiveErrors": 0,
+        "nextRunAtMs": 1771860000000,
+        "lastRunAtMs": 1771773600006,
+        "lastStatus": "ok",
+        "lastDurationMs": 224884
+      }
+    },
+    {
+      "id": "fund_portfolio_daily_2305_1771824616457",
+      "agentId": "main",
+      "name": "每日2305基金组合日报",
+      "enabled": true,
+      "createdAtMs": 1771824616457,
+      "updatedAtMs": 1771825744647,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 18 * * *",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Use skill fund-portfolio-daily-report to generate today's multi-fund portfolio report. Must call fund_portfolio_daily first and treat tool output as the only numeric truth source. Output in Chinese, Telegram-ready, plain-language style for non-professional users. Include: one-line summary, portfolio PnL, top contributors/detractors, and near-term outlook. Calendar gate is mandatory: if validTodayCount==0 then use non-trading snapshot mode; weekend/holiday should switch to next-week outlook mode and never claim confirmed same-day move."
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "7223802318",
+        "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1771840800000,
+        "lastRunAtMs": 1771825698877,
+        "lastStatus": "ok",
+        "lastDurationMs": 45770,
+        "consecutiveErrors": 0
+      }
+    }
+  ]
+}
