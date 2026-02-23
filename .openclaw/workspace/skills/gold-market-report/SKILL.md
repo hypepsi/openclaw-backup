@@ -36,6 +36,11 @@ metadata: { "openclaw": { "emoji": "📦", "skillKey": "gold-market-report" } }
 GoldAPI 不提供以下字段：10Y、DXY、GLD 持仓。
 这些必须通过 `web_search` 获取，但要降噪：
 
+0) 数据对象口径（写死）：
+- 10Y：US10Y yield (%) 最新值 + 日变动（bp）
+- DXY：ICE DXY 最新点位 + 日变动
+- GLD：SPDR Gold Shares holdings（tonnes）+ 变化值
+
 1) 定向来源优先级：
 - 第一优先：Reuters / Bloomberg / TradingView
 - 第二优先：CNBC / WSJ / Investing / Kitco
@@ -48,6 +53,8 @@ GoldAPI 不提供以下字段：10Y、DXY、GLD 持仓。
 3) 双来源约束：
 - 关键判断尽量双来源
 - 做不到时标注 `低置信度`
+- 同一条 Reuters 被多家转载不算双来源。
+- `官方数据源 + 媒体解读` 可算双来源。
 
 ## Professional Analysis Stack (Mandatory, But Adaptive)
 必须检查四层；若无新增变量可简写“延续上期，无显著增量”。
@@ -92,6 +99,10 @@ GoldAPI 不提供以下字段：10Y、DXY、GLD 持仓。
 - 写明证据不足点
 - 不输出强结论语气
 
+若某单因子检索失败：
+- 写：`该因子数据本次缺失，已降级为观察项，不参与 Top3 排序`
+- 禁止为凑结构硬排该因子。
+
 ### C. 增量优先
 若某层无实质新增：
 - 允许简写 `延续上期，无显著增量`
@@ -126,6 +137,7 @@ GoldAPI 不提供以下字段：10Y、DXY、GLD 持仓。
 - 7日回看：方向是否切换
 
 样本不足时必须明确写出，不得硬下结论。
+样本定义：`gold-market-report-history.json` 中最近有效 `history_states` 条目（不是自然日）。
 
 ### 主导因子排序 Top3（新增）
 每次必须输出：
@@ -133,6 +145,14 @@ GoldAPI 不提供以下字段：10Y、DXY、GLD 持仓。
 - 方向
 - 强度（1-5）
 - 较上期：强化/减弱/不变
+
+默认优先级（仅在强证据时可插队）：
+1. 实际利率/10Y（或 real yield proxy）
+2. DXY
+3. 风险事件（地缘/金融压力）
+4. ETF flow（GLD）
+5. Fed口径/宏观数据窗口
+6. 技术结构
 
 ### Narrative De-duplication
 当叙事重复：
@@ -184,6 +204,9 @@ GoldAPI 不提供以下字段：10Y、DXY、GLD 持仓。
 - 日内变化
 - OHLC / 区间
 
+**🗝️ 一句话核心结论**
+- 上涨/回落由 X 主导，Y 确认/背离，下一时段重点看 Z。
+
 **🧠 四层研判（白话）**
 - 宏观驱动（方向+强度）
 - 资金行为（支持/背离）
@@ -206,6 +229,11 @@ GoldAPI 不提供以下字段：10Y、DXY、GLD 持仓。
 
 **📍 下一时段观察点**
 - 2-4条可验证信号
+
+**🧮 Factor Score（可选增强）**
+- 0-100（用于连续对比，不用于绝对预测）
+- 推荐权重：宏观40 / 资金25 / 叙事20 / 技术15
+- 必须说明：较上期变化 + Top2 贡献因子
 
 **📚 数据与证据来源**
 - goldapi.io endpoint
