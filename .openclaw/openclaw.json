@@ -256,6 +256,9 @@
           "holdingsPath": "/home/hypepsi/.openclaw/workspace/data/portfolio/fund-portfolio-holdings.json"
         }
       }
-    }
+    },
+    "allow": [
+      "market-data"
+    ]
   }
 }
