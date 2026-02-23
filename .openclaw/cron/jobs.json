@@ -71,7 +71,7 @@
       "name": "每日1700港股科技收盘总结",
       "enabled": true,
       "createdAtMs": 1771553917669,
-      "updatedAtMs": 1771817850355,
+      "updatedAtMs": 1771837266038,
       "schedule": {
         "kind": "cron",
         "expr": "0 17 * * *",
@@ -81,7 +81,7 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Use skill hk-tech-close-report to generate today Hong Kong tech close report. Strictly follow skill validation for market-state (open/closed/holiday) and stale-data checks before any close conclusion. Must include Yahoo HSTECH.HK source section in output.\nHard gate: if data freshness is judged as 历史快照（非今日）, do not produce today close conclusion or today driver attribution; output status-only downgrade per skill."
+        "message": "Use skill hk-tech-close-report to generate today Hong Kong tech close report. Must call market_get_hstech_quote first and use it as the only numeric truth source for HSTECH close data. Enforce factor-driven engine (discount-rate, southbound flow, weight structure, policy narrative, risk sentiment) with factor scoring and a clear dominant-factor conclusion. Require adaptive delta-first output, 3-day/7-sample continuity review, unique markdown archive to ~/.openclaw/workspace/reports/hk-tech/, and state updates for last/history tracking. Hard gate: if freshness is non-today, output snapshot mode only and never claim confirmed same-day close drivers. Output Chinese, Telegram-ready, strict format per skill."
       },
       "delivery": {
         "mode": "announce",
@@ -90,10 +90,10 @@
         "bestEffort": true
       },
       "state": {
-        "nextRunAtMs": 1771837200000,
-        "lastRunAtMs": 1771817810145,
+        "nextRunAtMs": 1771923600000,
+        "lastRunAtMs": 1771837200007,
         "lastStatus": "ok",
-        "lastDurationMs": 40210,
+        "lastDurationMs": 66031,
         "consecutiveErrors": 0
       }
     },
@@ -281,6 +281,9 @@
         "channel": "telegram",
         "to": "7223802318",
         "bestEffort": true
+      },
+      "state": {
+        "nextRunAtMs": 1772307000000
       }
     }
   ]

@@ -1,130 +1,196 @@
 ---
 name: hk-tech-close-report
-description: Generate a Hong Kong tech market close report for HSTECH-heavy investors using Yahoo HSTECH.HK as the primary quote source, with strict market-state and stale-data checks.
+description: Generate a factor-driven Hong Kong tech close report (HSTECH) with strict close validity, continuity tracking, and unique archiving.
 user-invocable: true
 homepage: https://docs.openclaw.ai/tools/skills
 metadata: { "openclaw": { "emoji": "📦", "skillKey": "hk-tech-close-report" } }
 ---
 
-# HK Tech Close Report Skill
+# HK Tech Close Report 3.0
 
-## Purpose
-Produce a close-only recap for Hong Kong tech market (HSTECH-oriented), emphasizing final close data, key drivers, and medium-term holding context.
+## Goal
+输出“收盘有效性 + 因子驱动 + 连续跟踪”的港股科技收盘日报。
+不是新闻拼接，而是可追溯的状态机输出。
 
 ## Tool-First Execution (Mandatory)
-Must call plugin tool first:
+必须先调用：
 - `market_get_hstech_quote`
 
-This tool is the numeric truth source for the report and already persists stale-check snapshot:
+该工具是指数数值真相源，并落盘：
 - `~/.openclaw/workspace/state/hk-tech-close-last.json`
 
-Do not write HSTECH numbers before tool result is returned.
+禁止在工具返回前写任何 HSTECH 点位/涨跌数字。
 
 ## Primary Quote Source (Mandatory)
-Underlying canonical source remains Yahoo HSTECH:
-- `https://finance.yahoo.com/quote/HSTECH.HK/`
+指数数值源：Yahoo HSTECH.HK（通过插件工具）。
+- 页面：`https://finance.yahoo.com/quote/HSTECH.HK/`
 
-Recommended machine-readable endpoint (same symbol, same source family):
-- `https://query1.finance.yahoo.com/v7/finance/quote?symbols=HSTECH.HK`
+规则：
+1. HSTECH 点位/涨跌只能来自工具返回。
+2. web_search 可解释驱动，不得改写指数数值。
+3. 若指数数据失败：明确失败并停止。
 
-Rules:
-- HSTECH index level/涨跌幅 must come from `market_get_hstech_quote` output (Yahoo-backed).
-- Output must include a data-source section explicitly naming Yahoo URL above.
-- If Yahoo quote cannot be fetched, explicitly report failure and stop (no fabricated close).
+## Close Validity Gate (Mandatory)
+先判定其一：
+- `今日有效收盘`
+- `延迟/待确认`
+- `历史快照（非今日）`
 
-## Market-State and Stale-Data Guardrails (Mandatory)
-Before analysis, determine trading status using quote fields + Hong Kong time:
+若 `历史快照（非今日）`：
+- 禁止输出“今日收盘结论”
+- 禁止输出“今日定局推手”
+- 只能输出状态 + 最近可得解读 + 下一交易日观察点
 
-Key fields to inspect (if available):
-- `regularMarketPrice`
-- `regularMarketChangePercent`
-- `regularMarketTime`
-- `marketState`
+## Factor-Driven Research Engine (Mandatory, Adaptive)
+收盘有效后，必须做 5 因子检查；无新增可简写“延续上期，无显著增量”。
 
-Decision logic:
-1. If HKEX is holiday/weekend or quote `marketState` indicates closed and latest market timestamp is not today (Asia/Hong_Kong), output:
-   - `🛎️ 交易状态：今日港股休市/非交易日`
-   - Skip "today close" narrative.
-2. If current HK time is before close (16:00 HKT) and market not closed, output:
-   - `🛎️ 交易状态：尚未收盘`
-   - Do not present final close verdict.
-3. If market is closed but `regularMarketTime` is stale (not today HK date for a weekday expected to trade), output:
-   - `⚠️ 行情时间戳疑似停留在上次收盘，暂不做今日收盘结论`
-4. Only when data is clearly today-close valid, generate full close recap.
+### 1) 估值贴现率因子（Discount Rate Block）
+至少检查：
+- US 10Y yield
+- DXY
+- 美股风险偏好（纳指/中概隔夜情绪）
 
-## Date Validity Hard Gate (Mandatory)
-Never treat fetched data as "today close" by default. Determine one of:
-- `今日有效收盘`:
-  `regularMarketTime` (HK date) is today and market is closed.
-- `延迟/待确认`:
-  timestamp is near today but close validity is not fully confirmed.
-- `历史快照（非今日）`:
-  timestamp HK date is not today, or holiday/weekend carry-over.
+输出：方向（利多/中性/利空）+ 强度（1-5）+ 数据时间。
 
-If status is `历史快照（非今日）`:
-- forbid "今日收盘定局推手" narrative,
-- forbid "今日涨跌结论",
-- output only status + concise risk note.
+### 2) 南向资金因子（Southbound Flow Block）
+至少检查：
+- 南向净买入/净卖出方向
+- 是否集中在港科权重（如腾讯/阿里/美团）
 
-## Cross-Check Against Last Capture (Mandatory)
-To avoid misreading "old close" as "today close":
-- Compare current `regularMarketTime` and price against last captured snapshot from previous run.
-- If timestamp unchanged across runs during expected trading progression, flag as stale-risk.
-- In output, explicitly state whether this run is:
-  - `今日新收盘数据`
-  - or `沿用上次收盘数据（非今日新收盘）`
+输出：支持/背离 + 强度（1-5）+ 数据时间。
 
-Snapshot requirement:
-- Persist last valid quote snapshot to `~/.openclaw/workspace/state/hk-tech-close-last.json`.
-- Minimum fields: `fetch_time_hkt`, `regularMarketTime`, `regularMarketPrice`, `marketState`.
-- If no previous snapshot exists, explicitly state `首次运行，暂无上次快照对比`.
+### 3) 权重股结构因子（Weight Contribution Block）
+关注名单（默认）：
+- Tencent / Alibaba / Meituan / JD / Xiaomi / Kuaishou
 
-## Core Workflow
+输出：
+- 今日拉动Top2与拖累Top2（基于涨跌与叙事证据，不得编贡献点数）
+- 结构判断：权重主导 / 扩散修复 / 混合驱动
 
-### Stage 1: Validate quote first
-- Fetch Yahoo HSTECH quote.
-- Determine market/trade status using guardrails above.
-- If not valid today-close, output status + short note and stop deep close attribution.
+### 4) 政策叙事因子（Policy/Narrative Block）
+关注：
+- 平台经济监管
+- AI/半导体政策
+- 中美监管与中概审计叙事
 
-### Stage 2: Gather context drivers (only after quote validity)
-- Southbound flow and major weights (Tencent/Alibaba/Meituan etc.)
-- Key macro/policy/news catalysts
-- Keep cross-source verification for drivers, but do not override Yahoo close quote.
+输出：方向 + 强度 + 是否与资金因子一致。
 
-### Stage 3: Telegram output
-Formatting rules:
-- No `#` headers.
-- Use **Bold + Emoji** section headers.
-- Use `>` quote blocks for plain-language logic.
-- Keep whitespace between major blocks.
+### 5) 风险情绪因子（Risk Sentiment Block）
+关注：
+- 亚洲风险偏好
+- VIX/避险情绪线索（可得时）
 
-## Output Template
+输出：风险偏好日/避险日 + 强度。
+
+## Data Reliability Rules (Mandatory)
+
+### A. 定向来源优先级
+- 资金/政策/宏观：Reuters / Bloomberg / WSJ / CNBC 优先
+- 权重行情辅助：Yahoo / TradingView / Investing（至少其一）
+
+### B. 双来源与去重
+- 关键判断尽量双来源
+- 同一通讯社转载链不算双来源
+- `官方数据源 + 媒体解读` 可算双来源
+
+### C. 缺失降级
+- 若某因子数据缺失：
+  `该因子本次缺失，降级为观察项，不参与主导因子排序`
+- 禁止因单因子缺失导致整份报告停摆
+
+## Factor Scoring (Mandatory)
+每个因子给分：`-2 ~ +2`
+- `+2` 明显利多港科
+- `+1` 轻度利多
+- `0` 中性
+- `-1` 轻度利空
+- `-2` 明显利空
+
+综合分 = 5因子求和，输出倾向：
+- `>= +3`：偏多
+- `-2 ~ +2`：中性/混合驱动
+- `<= -3`：偏空
+
+必须指出：
+- 今日主导因子（若无法明确，写“结构性混合驱动”）
+
+## Continuity & Tracking (Mandatory)
+
+### State Files
+- last: `~/.openclaw/workspace/state/hk-tech-close-last.json`
+- history: `~/.openclaw/workspace/state/hk-tech-close-history.json`
+
+history 结构（最多7条）每条至少包含：
+- `reportTimeHKT`, `closeLevel`, `closeChgPct`, `freshness`, `factorTop3`, `confidence`, `archivePath`
+
+更新规则：
+- 新记录插入头部
+- 超过7条则裁剪
+
+### 回看规则
+- 3日/7日回看基于最近有效样本条目（不是自然日）
+- 样本不足时必须明确写出
+
+### 叙事去重
+若与上期高度重复：
+- 只写：新增变量 + 因子强弱变化 + 失效条件变化
+
+## Archiving Protocol (Mandatory)
+每次报告必须归档：
+- 目录：`~/.openclaw/workspace/reports/hk-tech/`
+- 文件名：`YYYY-MM-DD-close-<epoch>.md`
+- 禁止覆盖历史文件
+
+## Output Contract (Telegram)
 
 **📡 数据状态**
-- 交易状态：已收盘 / 尚未收盘 / 休市
-- 数据新鲜度：今日新收盘 / 延迟待确认 / 历史快照（非今日）
+- 交易状态：已收盘/未收盘/休市
+- 数据新鲜度：今日有效收盘/延迟待确认/历史快照
 
-**🛎️ 今日收盘真实快照（仅在有效收盘时）**
-- 恒生科技指数：XXXX 点
-- 日涨跌：X.XX%
-- 行情时间戳（HK）：YYYY-MM-DD HH:mm
+**🧷 上期基线回放（精简）**
+- 上期核心结论（1-2条）
+- 本次延续/反转
 
-**🆕 深度拆解：今日定局推手**
-1. ...
-2. ...
+**🛎️ 收盘快照（仅有效收盘时）**
+- HSTECH 收盘点位
+- 日涨跌
+- 行情时间戳（HKT）
 
-**💡 中线持仓内参（6-12个月）**
-- 今日收盘是否改变中线逻辑
-- 中线纪律与风险点
+**🗝️ 一句话核心结论**
+- 今日由 X 主导，Y 确认/背离，下一交易日看 Z。
 
-**📚 行情数据来源**
-- Yahoo Finance HSTECH.HK: `https://finance.yahoo.com/quote/HSTECH.HK/`
-- 拉取时间（本地）：...
-- 行情时间戳（Yahoo）：...
+**🧠 因子研判（白话）**
+- 5因子方向与强度（含必要简写）
+
+**🧮 因子评分与综合偏向**
+- 各因子分值（-2~+2）
+- 综合分与偏向（偏多/中性/偏空）
+- 今日主导因子（或混合驱动）
+
+**🔁 连续跟踪**
+- 3日回看
+- 7日回看
+- 主导因子Top3变化
+
+**🎯 中线结论（6-12个月）**
+- 当前中线框架是否变化
+- 置信度（高/中/低）
+- 失效条件（1-2条）
+
+失效条件模板：
+- `若南向连续N日净流出且权重股同步走弱，则当前反弹框架置信度下调一级`
+- `若指数跌破关键支撑并连续N日未收复，则中线结构转弱`
+
+**📍 下一交易日观察点**
+- 2-4条可验证信号（资金、权重、宏观窗口、关键位）
+
+**📚 数据与证据来源**
+- Yahoo HSTECH.HK
+- 宏观/资金/政策来源（3-8条）
+- 抓取与行情时间戳
 
 ## Quality Rules
-1. No fabricated index values.
-2. If close validity cannot be confirmed, state uncertainty and stop final-close conclusion.
-3. Keep objective tone; no direct investment advice.
-4. Separate "quote facts" from "cause attribution".
-5. "Fetched successfully" does not imply "today valid"; date-validity gate is mandatory.
+1. 禁止编造指数点位与贡献点数。
+2. 技术层不能单独下结论，至少回连资金/权重/宏观一层。
+3. 无新增变量时简写，不得重复上期大段内容。
+4. 证据不足必须降级并标明不确定性。
