@@ -36,6 +36,12 @@ metadata: { "openclaw": { "emoji": "📦", "skillKey": "hk-tech-close-report" } 
 - `延迟/待确认`
 - `历史快照（非今日）`
 
+时间基准硬规则：
+- 所有时间判断必须基于 `Asia/Hong_Kong`（HKT, UTC+8）。
+- 若当日行情时间戳在 12:00 后停止更新且非周末，可判定为“半日市有效收盘”。
+- 若当日行情时间戳在 16:00 后停止更新且非周末，可判定为“常规有效收盘”。
+- 若为香港公众假日/台风停市，必须输出“今日休市”并停止收盘归因研判。
+
 若 `历史快照（非今日）`：
 - 禁止输出“今日收盘结论”
 - 禁止输出“今日定局推手”
@@ -58,6 +64,11 @@ metadata: { "openclaw": { "emoji": "📦", "skillKey": "hk-tech-close-report" } 
 - 是否集中在港科权重（如腾讯/阿里/美团）
 
 输出：支持/背离 + 强度（1-5）+ 数据时间。
+
+南向资金搜索防污染规则：
+- 检索优先：HKEX 官方披露，其次主流金融终端/媒体快讯（同花顺、东方财富、Reuters、Bloomberg 等）。
+- 强制校验发布日期/数据日期为当日；若非当日，必须标注 `最近可得`。
+- A股同名主题或历史旧闻不得作为当日南向资金结论依据。
 
 ### 3) 权重股结构因子（Weight Contribution Block）
 关注名单（默认）：
@@ -111,6 +122,11 @@ metadata: { "openclaw": { "emoji": "📦", "skillKey": "hk-tech-close-report" } 
 - `-2 ~ +2`：中性/混合驱动
 - `<= -3`：偏空
 
+算术自证规则（防模型算错）：
+- 必须显示计算等式：
+  `综合分 = 因子1 + 因子2 + 因子3 + 因子4 + 因子5 = X`
+- 若等式无法写出，则不得输出综合偏向结论。
+
 必须指出：
 - 今日主导因子（若无法明确，写“结构性混合驱动”）
 
@@ -119,6 +135,10 @@ metadata: { "openclaw": { "emoji": "📦", "skillKey": "hk-tech-close-report" } 
 ### State Files
 - last: `~/.openclaw/workspace/state/hk-tech-close-last.json`
 - history: `~/.openclaw/workspace/state/hk-tech-close-history.json`
+
+执行要求：
+- 必须显式读取 `hk-tech-close-history.json` 后再写 3日/7日回看。
+- 若 history 文件不存在或损坏，明确降级并标注样本不足。
 
 history 结构（最多7条）每条至少包含：
 - `reportTimeHKT`, `closeLevel`, `closeChgPct`, `freshness`, `factorTop3`, `confidence`, `archivePath`
