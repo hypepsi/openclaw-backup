@@ -1,133 +1,187 @@
 ---
 name: gold-market-report
-description: Generate gold market daily reports in Chinese for Telegram with strict continuity (09:00/16:00 delta), using GoldAPI as the mandatory XAU/USD price source.
+description: Generate professional gold market daily reports in Chinese for Telegram with strict continuity, adaptive factor analysis, and unique report archiving.
 user-invocable: true
 homepage: https://docs.openclaw.ai/tools/skills
 metadata: { "openclaw": { "emoji": "📦", "skillKey": "gold-market-report" } }
 ---
 
-# Gold Market Daily Report Skill
+# Gold Market Report 3.0
 
 ## Goal
-Produce a concise, continuity-first gold report for 09:00 and 16:00 runs.
-Primary audience: medium/long-term investors (6-12 months).
+输出“可追溯、可连续跟踪、可长期稳定运行”的黄金日报。
+不是价格播报，而是因子驱动研判。
 
-## Tool-First Execution (Mandatory)
-Must call plugin tool first:
+## Tool-First Rules (Mandatory)
+先调用：
 - `market_get_xauusd_snapshot`
 
-If tool returns `ok: false`, explicitly output data failure and stop.
-Numeric fields in report must come from tool output.
+如果 `ok: false`：
+- 明确写价格数据失败并停止。
 
-## Mandatory Data Source (Price)
-For XAU/USD spot price and intraday change, use GoldAPI only.
+硬约束：
+1. XAU/USD 数值只能来自 GoldAPI（通过插件工具）。
+2. `web_search` 仅用于解释层，不得改写 GoldAPI 数值。
+3. 任何“今日变化”必须通过时间戳校验。
 
-API call:
+## Price Source (Mandatory)
+唯一价格源：`https://www.goldapi.io/api/XAU/USD`
 
-```bash
-curl -sS -X GET 'https://www.goldapi.io/api/XAU/USD' \
-  -H "x-access-token: ${GOLDAPI_ACCESS_TOKEN}"
-```
+报告必须写出：
+- 价格源
+- 拉取时间
+- 行情时间戳（UTC + 本地）
 
-Rules:
-- Do not use web search to fetch XAU/USD price.
-- If `GOLDAPI_ACCESS_TOKEN` is missing or API fails, explicitly output data collection failure and stop.
-- Keep the raw response fields needed for report rendering (at least price and daily change fields).
+## Professional Analysis Stack (Mandatory, But Adaptive)
+必须检查四层；若无新增变量可简写“延续上期，无显著增量”。
 
-## Extended GoldAPI Data (Recommended)
-When available, also use these official GoldAPI endpoints/fields to enrich report quality:
+### 1) 宏观驱动层
+优先覆盖：
+- 美国10Y收益率
+- 美元指数 DXY
+- Fed口径 / CPI-PCE-非农窗口
 
-- Daily snapshot endpoint: `https://www.goldapi.io/api/XAU/USD/YYYYMMDD`
-- Statistics endpoint: `https://www.goldapi.io/api/stat`
+输出：方向（利多/中性/利空）+ 强度（1-5）+ 证据。
 
-High-value fields from `XAU/USD` response:
-- `open_price`, `high_price`, `low_price`, `prev_close_price`
-- `ch`, `chp` (absolute and percent daily move)
-- `ask`, `bid` (for spread/liquidity proxy)
-- `price_gram_24k`, `price_gram_22k`, `price_gram_21k`, `price_gram_20k`, `price_gram_18k`
-- `timestamp`, `metal`, `currency`, `exchange`
+### 2) 资金行为层
+优先覆盖：
+- 黄金ETF流向（如 GLD 持仓）
+- 风险偏好变化（避险/风险资产）
 
-Derived metrics (recommended):
-- Intraday range `%` = `(high_price - low_price) / open_price`
-- Spread basis points = `(ask - bid) / price * 10000`
-- Versus previous close `%` and absolute delta
+输出：是否支持当前黄金方向 + 较上期强化/减弱。
 
-Degrade rule:
-- If any optional field is missing, do not fail the report.
-- Explicitly note: `部分扩展字段不可用，已按基础字段降级输出`.
+### 3) 叙事与情绪层
+- 最近24-72小时核心叙事 2-4 条
+- 关键判断尽量双来源
+- 冲突必须写 `分歧与不确定性`
 
-## Continuity Protocol (Mandatory)
-- 09:00 report baseline: previous day 16:00 report.
-- 16:00 report baseline: same-day 09:00 report.
-- Always include:
-  - 2-4 baseline bullets
-  - what changed since baseline
-  - what did not change
+### 4) 技术与结构层（轻量）
+- 支撑/阻力
+- 趋势/震荡/压缩
+- 必须回连宏观与资金层，不得孤立技术结论。
 
-Baseline retrieval order:
-1. Previous cron run record for this job.
-2. Local continuity snapshot file: `~/.openclaw/workspace/state/gold-market-report-last.json`.
-3. If both unavailable, explicitly state `基线不可用，已降级为单次快照解读`.
+## Adaptive Stability Rules (Mandatory)
 
-If baseline is unavailable, state this explicitly and continue with best-effort analysis using current available data.
+### A. 数据降级（最近可得）
+若宏观或ETF在近24小时无更新：
+- 允许使用最近可得交易日数据
+- 明确标注：`最近可得：YYYY-MM-DD`
+- 置信度下调一级
 
-## Date Validity Hard Gate (Mandatory)
-Successful fetch does not mean "today valid".
+禁止因为单个解释因子缺失而整份报告停摆。
 
-Determine one status before narrative:
-- `今日有效快照`: market timestamp date equals report date (local timezone used in output).
-- `延迟待确认`: timestamp near current session but freshness uncertain.
-- `历史快照（非今日）`: timestamp date is not today (including weekend/holiday carry-over).
+### B. 证据不足降级
+若关键判断无法双来源：
+- 标注 `低置信度`
+- 写明证据不足点
+- 不输出强结论语气
 
-If status is `历史快照（非今日）`:
-- forbid "今日增量变化" as confirmed same-day conclusion,
-- output "最近可得快照解读",
-- explicitly mention non-today timestamp in first block.
+### C. 增量优先
+若某层无实质新增：
+- 允许简写 `延续上期，无显著增量`
+- 正文优先写新增变量和强弱变化
+
+## Continuity & Tracking (Mandatory)
+
+### Baseline Rules
+- 09:00 对比：前一交易日 16:00
+- 16:00 对比：当日 09:00
+
+基线来源顺序：
+1. `~/.openclaw/workspace/reports/gold/` 最近一期归档
+2. `~/.openclaw/workspace/state/gold-market-report-last.json`
+3. 若都无：`基线不可用，降级为单次快照`
+
+### 3日 / 7日回看
+每次报告必须包含：
+- 3日回看：主导因子是否连续
+- 7日回看：方向是否切换
+
+样本不足时必须明确写出，不得硬下结论。
+
+### 主导因子排序 Top3（新增）
+每次必须输出：
+- 因子名
+- 方向
+- 强度（1-5）
+- 较上期：强化/减弱/不变
+
+### Narrative De-duplication
+当叙事重复：
+- 禁止重复大段旧内容
+- 只写：新增变量 + 因子强弱变化 + 失效条件变化
+
+## Archiving Protocol (Mandatory)
+每次报告必须归档：
+- 目录：`~/.openclaw/workspace/reports/gold/`
+- 文件名：`YYYY-MM-DD-0900-<epoch>.md` 或 `YYYY-MM-DD-1600-<epoch>.md`
+
+规则：
+- 禁止覆盖已有文件
+- 重跑必须生成新文件（唯一命名）
+
+并更新状态：
+- `~/.openclaw/workspace/state/gold-market-report-last.json`
+- 至少包含：时点、价格、涨跌、主导因子Top3、置信度、归档路径
+
+## Date/Freshness Gate (Mandatory)
+先判定：
+- `今日有效快照`
+- `延迟待确认`
+- `历史快照（非今日）`
+
+若为 `历史快照（非今日）`：
+- 禁止写“今日驱动已确认”
+- 只能写“最近可得快照 + 下一时段观察点”
 
 ## Output Contract (Telegram)
-Use this exact structure:
 
 **📡 数据状态**
-- GoldAPI 拉取状态：成功/失败
-- 报告时点：09:00 或 16:00
-- 数据新鲜度：今日有效/延迟待确认/历史快照（非今日）
+- GoldAPI 拉取状态
+- 报告时点（09:00/16:00）
+- 数据新鲜度（今日有效/延迟待确认/历史快照）
 
-**🧷 上期基线回放**
-- ...
+**🧷 上期基线回放（精简）**
+- 上期核心结论（1-2条）
+- 本次延续/反转
 
 **⏱️ 当前金价快照（XAU/USD）**
-- 当前价格：... 美元/盎司
-- 相对上期变化：上涨/下跌 ... 美元（...%）
-- 日内变化：...%
-- 日内区间（OHLC）：Open ... / High ... / Low ... / Prev Close ...
+- 当前价格
+- 相对上期变化（绝对值 + %）
+- 日内变化
+- OHLC / 区间
 
-**🧮 微结构补充（可选）**
-- 点差（ask-bid）：...（... bps）
-- 克价参考（24K/22K/18K）：... / ... / ...
+**🧠 四层研判（白话）**
+- 宏观驱动（方向+强度）
+- 资金行为（支持/背离）
+- 叙事情绪（新增变量）
+- 技术结构（关键位）
 
-**🔍 本次增量变化**
-- 变化1
-- 变化2
-- 变化3
+**🔁 连续跟踪**
+- 3日回看
+- 7日回看
+- 主导因子排序 Top3（方向+强度+变化）
 
-**🧠 中线解读（6-12个月）**
-- 维持不变的主线
-- 本次新增变量对中线的影响
+**🎯 中线结论（6-12个月）**
+- 主线是否变化
+- 置信度（高/中/低）
+- 失效条件（1-2条）
 
-**📚 价格数据来源**
-- goldapi.io (`https://www.goldapi.io/api/XAU/USD`)
-- 拉取时间：<本次拉取时间>
-- 行情时间戳（UTC）：...
-- 行情时间戳（本地）：...
+失效条件固定模板：
+- `若 <变量A> 突破/跌破 <阈值> 并持续 <N> 个交易日，则当前框架失效/降级`
+- `若 <资金或叙事指标> 连续 <N> 日反向，则结论置信度下调一级`
 
-## Quality Rules
-- Chinese only, Telegram-ready.
-- No fabricated numbers.
-- If API data is incomplete, state uncertainty explicitly.
-- Keep style direct and non-promotional.
-- Source-time fields are mandatory: source endpoint + fetch time + market timestamp (UTC and local). Missing any item is non-compliant.
-- Never label as "today change" when timestamp date is not today.
+**📍 下一时段观察点**
+- 2-4条可验证信号
 
-## Notes for Scheduled Jobs
-- This skill is designed for isolated cron sessions.
-- Cron prompt should only instruct invoking this skill plus continuity context (09:00 vs 16:00).
+**📚 数据与证据来源**
+- goldapi.io endpoint
+- 宏观/资金/新闻来源（3-8条）
+- 拉取时间与行情时间戳（UTC + 本地）
+
+## Quality Bar
+1. 不允许空泛建议（无因子证据的“观望/保持仓位”）。
+2. 无新增变量时必须简写，不得凑字数重复。
+3. 关键判断证据不足时必须降级为低置信度。
+4. 对外必须白话；对内因子逻辑必须可追溯。
+5. 归档必须唯一命名，禁止覆盖历史。
